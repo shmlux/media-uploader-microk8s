@@ -1,0 +1,13 @@
+# Ignore user-uploaded files
+uploads/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.webm
+
+
+# Ignore Python caches
+__pycache__/
+*.pyc

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-uploader
+  labels:
+    app: media-uploader
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: media-uploader
+ template:
+   metadata:
+     labels:
+       app: media-uploader
+   spec:
+     containers:
+     - name: web
+       image: localhost:32000/media-uploader:v6
+       ports:
+       - containerPort: 80
+         name: http
+       volumeMounts:
+       - name: media-storage
+         mountPath: /app/uploads
+     volumes:
+     - name: media-storage
+       persistentVolumeClaim:
+         claimName: media-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-service
+spec:
+  type: NodePort
+  selector:
+    app: media-uploader
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
