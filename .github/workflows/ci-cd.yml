@@ -38,3 +38,9 @@ jobs:
     - name: Test Docker Build
       run: |
         docker build -t media-uploader:test .
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install Flask==3.0.2 werkzeug==3.0.1 Pillow==10.2.0
+        pip install torch==2.2.0 torchvision==0.17.0 --index-url https://pytorch.org
