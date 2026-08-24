@@ -32,10 +32,10 @@ Ensure your local Linux workstation or VM has at least 2 vCPUs, 4 GB RAM, and Do
 Navigate to your project directory and build your image tagged for the local MicroK8s registry:
 ```bash
 # Build the container image
-docker build -t localhost:32000/media-uploader:v1 .
+docker build -t localhost:32000/media-uploader:v6 .
 
 # Push the image to the local cluster registry
-docker push localhost:32000/media-uploader:v1
+docker push localhost:32000/media-uploader:v6
 ```
 
 ### 2. Apply Kubernetes Manifests
