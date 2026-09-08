@@ -1,67 +1,35 @@
-# Containerized Media Uploader for MicroK8s
+# Media Uploader Application
 
-A lightweight, containerized Python Flask web application that accepts web images or videos and saves them to cluster-backed persistent storage. This repository serves as an educational exercise for building custom Docker images, utilizing local registries, and implementing Kubernetes persistent storage.
+A containerized Python media application deployed on a local single-node Kubernetes cluster using **MicroK8s**.
 
-## 🚀 Features
-* **Media Uploads**: Accepts `.jpg`, `.png`, `.gif`, `.mp4`, and `.webm` file formats (Max 50MB).
-* **Containerized Architecture**: Packaged into a minimal Docker container using `python:3.11-slim`.
-* **Persistent Storage**: Utilizes a Kubernetes `PersistentVolumeClaim` (PVC) mapped to a MicroK8s `hostpath-storage` provisioner to ensure data survives pod restarts.
-* **Local Registry Integration**: Configured to build, push, and deploy seamlessly using the MicroK8s built-in registry.
+## 🛠 Kubernetes Architecture & Ports
 
-## 🛠️ Prerequisites & Cluster Setup
+The application uses a **NodePort Service** to bridge internal container traffic to the external host environment. 
 
-Ensure your local Linux workstation or VM has at least 2 vCPUs, 4 GB RAM, and Docker Engine installed. 
+| Layer | Component / Configuration | Target Port |
+| :--- | :--- | :--- |
+| **Frontend Access (Mac)** | Web Browser (Host Machine) | `http://<VM_IP>:30080` |
+| **Cluster External Layer**| `media-service` (NodePort) | `30080` |
+| **Cluster Internal Layer**| `media-service` (ClusterIP)| `80` |
+| **Application Layer**     | `app.py` / Container Port | `80` |
 
-1. **Install MicroK8s:**
+> ⚠️ **Important Networking Note:** Because of MicroK8s local network isolation rules, the NodePort cannot be reliably reached over standard host SSH tunnels (`localhost:30080`). Traffic must be port-forwarded across all interfaces.
+
+## 🚀 Deployment & Local Access Instructions
+
+1. **Apply the Kubernetes manifests:**
    ```bash
-   sudo snap install microk8s --classic
+   sudo microk8s kubectl apply -f storage.yaml
+   sudo microk8s kubectl apply -f deployment.yaml
+   sudo microk8s kubectl apply -f media-service.yaml
    ```
 
-2. **Enable Required Addons:**
+2. **Expose the service to your host machine (Mac):**
+   Run the following port-forward command inside the VM to bind the cluster traffic to all network interfaces:
    ```bash
-   # Enable dynamic storage provisioning
-   microk8s enable hostpath-storage
-
-   # Enable local container registry at localhost:32000
-   microk8s enable registry
+   sudo microk8s kubectl port-forward --address 0.0.0.0 service/media-service 30080:80
    ```
 
-## 📦 How to Build and Deploy
-
-### 1. Build and Push the Container Image
-Navigate to your project directory and build your image tagged for the local MicroK8s registry:
-```bash
-# Build the container image
-docker build -t localhost:32000/media-uploader:v6 .
-
-# Push the image to the local cluster registry
-docker push localhost:32000/media-uploader:v6
-```
-
-### 2. Apply Kubernetes Manifests
-Deploy the storage backend, application layer, and network service to your cluster:
-```bash
-# Deploy persistent volume claim
-microk8s kubectl apply -f storage.yaml
-
-# Deploy application deployment and NodePort service
-microk8s kubectl apply -f deployment.yaml
-```
-
-### 3. Access the Application
-Verify that your pods are up and running:
-```bash
-microk8s kubectl get pods -l app=media-uploader
-```
-Open your web browser and navigate to: `http://localhost:30080` (or your Node's IP address).
-
-## 🧪 Verifying Data Persistence
-
-To test that data persists independently of the application lifecycle:
-1. Upload an image or video through the web UI.
-2. Force delete the running pod to trigger a replacement:
-   ```bash
-   microk8s kubectl delete pod -l app=media-uploader
-   ```
-3. Wait for the deployment to initialize a new pod (`microk8s kubectl get pods -w`).
-4. Refresh your browser at `http://localhost:30080`. Your uploaded files will remain safely accessible.
+3. **Open the Application:**
+   Find your VM's IP address (`hostname -I`) and open your Mac's browser to:
+   `http://<YOUR_VM_IP_ADDRESS>:30080`
