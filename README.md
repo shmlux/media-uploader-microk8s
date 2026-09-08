@@ -1,15 +1,3 @@
-
-░░░░░░░░░░░░░░░░░░░░
-░▄▀▄▀▀▀▀▄▀▄░░░░░░░░░
-░█░░░░░░░░▀▄░░░░░░▄░
-█░░▀░░▀░░░░░▀▄▄░░█░█
-█░▄░█▀░▄░░░░░░░▀▀░░█
-█░░▀▀▀▀░░░░░░░░░░░░█
-█░░░░░░░░░░░░░░░░░░█
-█░░░░░░░░░░░░░░░░░░█
-░█░░▄▄░░▄▄▄▄░░▄▄░░█░
-░█░▄▀█░▄▀░░█░▄▀█░▄▀░
-░░▀░░░▀░░░░░▀░░░▀░░░
 # Containerized Media Uploader for MicroK8s
 
 A lightweight, containerized Python Flask web application that accepts web images or videos and saves them to cluster-backed persistent storage. This repository serves as an educational exercise for building custom Docker images, utilizing local registries, and implementing Kubernetes persistent storage.
